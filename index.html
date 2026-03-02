@@ -673,8 +673,8 @@
         
         // 引擎二改动：计算MBTI乘数
         let mbtiMultiplier = 1.0;
-        if (mbtiTier === 1) mbtiMultiplier = 1.5;
-        else if (mbtiTier === 3) mbtiMultiplier = -1.0;
+        if (mbtiTier === 1) mbtiMultiplier = 1.2; // 降到 1.2 倍，钱变多，但不过分
+        else if (mbtiTier === 3) mbtiMultiplier = -0.5; // E人的反噬也温和一点，扣除一半的情绪红利
 
         // 计算基础搞钱分数 (防负数处理)
         const engineOneTotalGain = hardMoneyMonthly + baseTimeValueMonthly;
@@ -709,17 +709,24 @@
         // 4. 情绪软价值 (引入MBTI和边界惩罚)
         if (emotionTier === 1) { 
             softValueMonthly += (monthlySalary * 0.05) * wfhRatio * mbtiMultiplier; 
-            score += 10; 
-        } 
+            score += 10; // 锁死 10 分！剥夺免死金牌，维持 100 分绝对框架！
+        }
         else if (emotionTier === 2) { 
-            softValueMonthly += 0; 
-            score += 0; 
+            // 即使是“及格”狀態，E人只要不社交就會持續掉血
+            if (mbtiTier === 3) {
+                softValueMonthly -= (monthlySalary * 0.02) * wfhRatio; // E人額外孤獨扣款
+                score -= 5; // E人憋在家裡扣 5 分
+            } else {
+                softValueMonthly += 0; 
+                score += 0; 
+            }
         } 
         else if (emotionTier === 3) { 
-            // 致命扣款：每天按2小时无偿加班折算时薪惩罚
+            // 致命扣款：每天按2小時無償加班折算時薪懲罰
             const unpaidOvertimePenalty = 2 * wfhDaysPerMonth * hourlyRate;
             softValueMonthly -= unpaidOvertimePenalty; 
-            score -= 10; 
+            // E人承受“加班+孤獨”雙重暴擊，扣分更狠
+            score -= (mbtiTier === 3 ? 15 : 10); 
         }
 
         softValueMonthly += extraGrowthValue;
