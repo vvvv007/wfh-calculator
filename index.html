@@ -475,7 +475,7 @@
                 <input type="number" id="appearanceSaved" value="100" oninput="calculate()">
             </div>
             
-<div class="input-group">
+            <div class="input-group">
                 <label style="color: #E74C3C;">🏢 错失的公司羊毛与日用耗材 <span class="note">(月，自费暴涨的水电/抽纸，自己搞卫生的折旧，及错失的公司食堂/无限零食)</span></label>
                 <input type="number" id="officePerksLoss" value="0" oninput="calculate()">
             </div>
@@ -598,6 +598,9 @@
                 </div>
 
             </div>
+            <button id="copyBtn" class="btn-primary" style="background: linear-gradient(90deg, #2C2C2C 0%, #4A4A4A 100%); margin-top: 24px; font-size: 16px; box-shadow: 0 6px 16px rgba(0,0,0,0.15);" onclick="copyResult()">📋 一键复制测算结果去装杯</button>
+            <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-top: 15px; opacity: 0.8; letter-spacing: 0.5px;">好工具不能自己独享，发给你的冤种打工搭子，看看谁的隐形工资更高？😏</p>
+
         </div>
         
         <div style="height: 20px;"></div>
@@ -868,6 +871,52 @@
             soulSentenceBox.style.background = "rgba(250, 115, 52, 0.05)";
             soulSentenceBox.style.borderColor = "rgba(250, 115, 52, 0.2)";
         }
+    }
+// ==========================================
+    // 🌟🌟🌟 新增：一键复制生成爆款网感文案的功能 🌟🌟🌟
+    // ==========================================
+    function copyResult() {
+        const score = document.getElementById('scoreDisplay').innerText;
+        const label = document.getElementById('scoreLabel').innerText;
+        const total = document.getElementById('totalMonthlyDisplay').innerText;
+        const hard = document.getElementById('hardMoneyDisplay').innerText;
+        const negPercent = document.getElementById('negotiationPercentDisplay').innerText;
+        const raisePercent = document.getElementById('raisePercentDisplay').innerText;
+        const raiseTitle = document.getElementById('raisePercentTitle').innerText;
+        
+        // 动态拼装充满网感的纯文本
+        let textToCopy = `📊 刚做完 WFH 隐形资产体检，结果惊呆了...\n\n`;
+        textToCopy += `🏅 综合段位：${label} (${score}分)\n`;
+        textToCopy += `💰 每月物理金钱净利：${hard}\n`;
+        textToCopy += `💎 加上情绪/睡眠后的【总隐形红利】：${total}/月\n`;
+        
+        // 根据正负数自动生成不同的装杯/比惨金句
+        if (raiseTitle.includes("血亏")) {
+            textToCopy += `📉 结论：如果让我取消居家，我的生活质量将血亏 ${raisePercent}！\n`;
+        } else {
+            textToCopy += `🤡 破防了：在家太憋屈，回公司蹭空调反而能血赚 ${raisePercent}...\n`;
+        }
+        
+        textToCopy += `🗣️ 终极底线：如果 HR 强行要求回办公室，除非给我加薪 ${negPercent} 兜底，否则绝不妥协！\n\n`;
+        textToCopy += `👇 你是在家闷声发大财还是自费当牛马？快来测测！\n`;
+        textToCopy += `(🔍 小红书搜：[这里填入你的小红书昵称或活动暗号])`;
+
+        // 调用系统剪贴板 API
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const btn = document.getElementById('copyBtn');
+            const originalText = btn.innerText;
+            // 复制成功的视觉反馈
+            btn.innerText = "✅ 复制成功！快去微信群对线~";
+            btn.style.background = "var(--green)";
+            
+            // 2秒后恢复原状
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "linear-gradient(90deg, #2C2C2C 0%, #4A4A4A 100%)";
+            }, 2000);
+        }).catch(err => {
+            alert("复制失败，可能是浏览器权限限制，请手动截图分享哦~");
+        });
     }
 </script>
 
