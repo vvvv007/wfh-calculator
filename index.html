@@ -610,12 +610,21 @@
         const landing = document.getElementById('landingPage');
         const calc = document.getElementById('calculatorPage');
         
+        // 1. 触发首页淡出动画
         landing.style.opacity = '0';
         landing.style.transform = 'translateY(-10px)';
         
         setTimeout(() => {
+            // 2. 彻底隐藏首页，并清空残留的内联样式
             landing.classList.remove('active');
+            landing.style.opacity = '';
+            landing.style.transform = '';
+            
+            // 3. 调出测算页，并【强制重置】透明度为1（修复白屏的核心所在！）
             calc.classList.add('active');
+            calc.style.opacity = '1';
+            calc.style.transform = 'translateY(0)';
+            
             window.scrollTo(0, 0); 
             calculate(); 
         }, 300);
@@ -625,18 +634,24 @@
         const landing = document.getElementById('landingPage');
         const calc = document.getElementById('calculatorPage');
         
+        // 1. 触发测算页淡出动画
         calc.style.opacity = '0';
         calc.style.transform = 'translateY(10px)';
         
         setTimeout(() => {
+            // 2. 彻底隐藏测算页，并清空残留的内联样式
             calc.classList.remove('active');
+            calc.style.opacity = '';
+            calc.style.transform = '';
+            
+            // 3. 调出首页，并强制重置透明度为1
             landing.classList.add('active');
             landing.style.opacity = '1';
             landing.style.transform = 'translateY(0)';
+            
             window.scrollTo(0, 0);
         }, 300);
     }
-
     function calculate() {
         const wfhDaysPerWeek = parseFloat(document.getElementById('wfhDays').value) || 5;
         const monthlySalary = parseFloat(document.getElementById('monthlySalary').value) || 0;
