@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WFH 价值体检报告</title>
+    <style>
+        /* =========================================
+           ✨ 原汁原味打工体验报告 UI 风格
+           ========================================= */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #FFF8F1 0%, #FFF0F3 100%);
+            --bg-card: #FFFFFF;
+            --text-main: #2C2C2C;
+            --text-sub: #7A7A7A;
+            --border-color: #EAEAEA;
+            --btn-gradient: linear-gradient(90deg, #FA7334 0%, #F04155 100%);
+            --btn-shadow: 0 6px 16px rgba(240, 65, 85, 0.25);
+            
+            --tier-unicorn: #FFF0F3;
+            --tier-coffee: #FFF5ED;
+            --tier-neutral: #FFF9ED;
+            --tier-skull: #F4F5F7;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 60px;
+            position: relative;
+        }
+
+        /* 页面切换动画 */
+        .view {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 顶部标题排版 */
+        .header-title {
+            text-align: center;
+            padding: 20px 0 30px 0;
+        }
+        .header-title .emoji {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            color: var(--text-main);
+            letter-spacing: 1px;
+        }
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* 返回首页按钮 */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-sub);
+            cursor: pointer;
+            padding: 8px 0;
+            margin-bottom: 10px;
+            transition: color 0.2s;
+        }
+        .back-btn:active { color: #F04155; }
+
+        /* 卡片样式 */
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 28px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+        }
+        .card h2 {
+            font-size: 16px;
+            font-weight: 800;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            color: #F04155; 
+        }
+
+        /* 首页说明区网感排版 */
+        .intro-text {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-top: -10px;
+        }
+        .intro-text strong { color: var(--text-main); font-weight: 700; }
+        .highlight-box {
+            background: #FFF0F3;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 15px 0;
+            color: #F04155;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: center;
+            border: 1px dashed rgba(240, 65, 85, 0.3);
+        }
+        .truth-list { margin-top: 15px; padding-left: 0; list-style: none;}
+        .truth-list li { margin-bottom: 12px; display: flex; align-items: flex-start; }
+        .truth-list li .icon { margin-right: 8px; font-size: 16px; }
+
+        /* 首页分类展示区 */
+        .tier-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        @media (max-width: 500px) {
+            .tier-list { grid-template-columns: 1fr; }
+        }
+        .tier-item {
+            border-radius: 16px;
+            padding: 20px;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .tier-item.unicorn { background: var(--tier-unicorn); }
+        .tier-item.coffee { background: var(--tier-coffee); }
+        .tier-item.neutral { background: var(--tier-neutral); }
+        .tier-item.skull { background: var(--tier-skull); }
+
+        .tier-item .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .tier-item .emoji { font-size: 20px; }
+        .tier-item .badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: #FFF;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .tier-item.unicorn .badge { background: #F23F5D; }
+        .tier-item.coffee .badge { background: #FA7334; }
+        .tier-item.neutral .badge { background: #F59E0B; }
+        .tier-item.skull .badge { background: #333333; }
+
+        .tier-item .info h4 {
+            margin: 0 0 6px 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .tier-item .info p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--text-sub);
+            line-height: 1.4;
+        }
+
+        /* 表单输入区 */
+        .input-group { margin-bottom: 20px; }
+        .input-group:last-child { margin-bottom: 0; }
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-sub);
+        }
+        .input-group .note {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: 400;
+            display: inline-block;
+            margin-left: 4px;
+            opacity: 0.8;
+        }
+        input[type="number"], select {
+            width: 100%;
+            background-color: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 15px;
+            color: var(--text-main);
+            box-sizing: border-box;
+            transition: all 0.3s;
+            -webkit-appearance: none;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #FA7334;
+            box-shadow: 0 0 0 3px rgba(250, 115, 52, 0.1);
+        }
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7A7A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        /* 按钮样式 */
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background: var(--btn-gradient);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 800;
+            text-align: center;
+            padding: 18px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            margin-top: 20px;
+            box-shadow: var(--btn-shadow);
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        /* 结果面板 */
+        .result-box {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 30px 24px;
+            margin-top: 10px;
+            box-shadow: 0 8px 30px rgba(240, 65, 85, 0.08);
+            border: 2px solid #FFF0F3;
+        }
+        .score-display {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .score-display .score-num {
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 8px;
+            background: var(--btn-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .score-display .score-badge {
+            display: inline-block;
+            background: var(--tier-unicorn);
+            color: #F04155;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 800;
+        }
+        .score-display .score-desc {
+            font-size: 14px;
+            color: var(--text-main);
+            margin-top: 15px;
+            font-weight: 500;
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+        .result-row .item-info {
+            display: flex;
+            flex-direction: column;
+            max-width: 75%;
+        }
+        .result-row .item-sub {
+            font-size: 11px;
+            color: var(--text-sub);
+            font-weight: 400;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .result-row .val { font-weight: 800; color: var(--text-main); font-size: 16px; }
+
+        .conclusion-panel {
+            background: var(--tier-skull);
+            border-radius: 16px;
+            padding: 24px 20px;
+            margin-top: 24px;
+        }
+        .conclusion-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px dashed #D5D5D5;
+        }
+        .conclusion-item:last-child {
+            margin-bottom: 0; padding-bottom: 0; border-bottom: none;
+        }
+        .conclusion-item .title { font-size: 14px; font-weight: 800; color: var(--text-main); }
+        .conclusion-item .desc { font-size: 12px; color: var(--text-sub); margin-top: 6px; line-height: 1.4; }
+        .conclusion-item .percent { font-size: 24px; font-weight: 800; float: right; margin-top: -5px;}
+        
+        /* 灵魂金句强化框 */
+        .soul-sentence-box {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(240, 65, 85, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(240, 65, 85, 0.15);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .soul-sentence-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: #F04155;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <div id="landingPage" class="view active">
+        <div class="header-title">
+            <div class="emoji">🇭🇰</div>
+            <h1>WFH 价值体检报告</h1>
+            <p>WFH EXPERIENCE REPORT (V3.4)</p>
+        </div>
+
+        <div class="card" style="background: linear-gradient(180deg, #FFFFFF 0%, #FFFDFD 100%);">
+            <div class="intro-text">
+                <div class="highlight-box" style="font-size: 14px;">
+                    “WFH 可能是打工人最被低估的隐形收入。”
+                </div>
+                职场论坛里经常有个灵魂拷问：“为了能 WFH，你愿意降薪多少？”<br>
+                做这个工具，就是想帮大家把“居家办公的爽”量化成“看得见的钱”。因为 WFH 给你的，远不止那张人体工学椅：<br>
+                <ul class="truth-list">
+                    <li><span class="icon">🚇</span> <span><strong>肉身买断费：</strong>每天省下的通勤与装忙时间，按时薪折算，全是公司欠你的受苦补偿金。</span></li>
+                    <li><span class="icon">💸</span> <span><strong>隐形搞钱：</strong>告别外卖刺客与职场门面税，甚至还能用碎片时间顺手搞个副业。</span></li>
+                    <li><span class="icon">🪫</span> <span><strong>反内耗红利：</strong>重获穿衣自由，完美隔绝办公室政治，保住发际线和好心情。</span></li>
+                </ul>
+                <div style="border-top: 1px dashed #EAEAEA; margin-top: 15px; padding-top: 15px; font-size: 13px;">
+                    本测试通过 <strong style="color: #FA7334;">「50底盘 + 20搞钱 + 30软价值」</strong> 计分模型，不凭感觉，用硬核数据帮你算清：<br>
+                    <strong>你的这份“自由”到底能折现多少钱？你的居家办公质量究竟是顶级增值，还是无效内耗？</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 WFH 质量体检段位</h2>
+            <div class="tier-list">
+                <div class="tier-item unicorn">
+                    <div class="header">
+                        <span class="emoji">🦄</span>
+                        <span class="badge">> 90</span>
+                    </div>
+                    <div class="info">
+                        <h4>顶级数字游民</h4>
+                        <p>实现了时间与财富的双重自由。不仅狂赚隐形红利，身心状态也达到巅峰。</p>
+                    </div>
+                </div>
+                
+                <div class="tier-item coffee">
+                    <div class="header">
+                        <span class="emoji">☕</span>
+                        <span class="badge">70-89</span>
+                    </div>
+                    <div class="info">
+                        <h4>清醒搞钱人</h4>
+                        <p>完美拿捏居家杠杆。不仅省下了真金白银，更彻底隔绝了职场精神内耗。</p>
+                    </div>
+                </div>
+
+                <div class="tier-item neutral">
+                    <div class="header">
+                        <span class="emoji">😐</span>
+                        <span class="badge">50-69</span>
+                    </div>
+                    <div class="info">
+                        <h4>赛博老黄牛</h4>
+                        <p>只是把工位搬进了卧室。省了点通勤费，却彻底赔上了工作与生活的边界感。</p>
+                    </div>
+                </div>
+
+                <div class="tier-item skull">
+                    <div class="header">
+                        <span class="emoji">💀</span>
+                        <span class="badge">< 50</span>
+                    </div>
+                    <div class="info">
+                        <h4>负资产打工</h4>
+                        <p>作息崩盘、外卖续命、随时待命。隐形损耗巨大，还不如回公司蹭免费空调。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="startCalculator()">🔪 算算这笔血泪账 👉</button>
+    </div>
+
+    <div id="calculatorPage" class="view">
+        <div class="back-btn" onclick="goHome()">🔙 返回首页</div>
+        
+        <div class="header-title" style="padding: 10px 0 20px 0;">
+            <h1 style="font-size: 24px;">数据录入</h1>
+            <p style="color:#7A7A7A; font-size: 12px; margin-top:5px; text-transform:none;">所有数据将在离开网页时丢弃</p>
+        </div>
+
+        <div class="card">
+            <h2>💰 绝对金钱价值评估</h2>
+            
+            <div class="input-group">
+                <label>每周 WFH 天数 <span class="note">(1~5天，决定省钱红利比例)</span></label>
+                <input type="number" id="wfhDays" value="5" min="1" max="5" step="0.5" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>税前月薪 <span class="note">(计算真实时薪与情绪溢价基数)</span></label>
+                <input type="number" id="monthlySalary" value="20000" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>平均每日工时 <span class="note">(计算基础纯净时薪的分母)</span></label>
+                <input type="number" id="dailyHours" value="8" step="0.5" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>🏠 每月居住成本套利 <span class="note">(因不用去办公室省下的地理套利差价)</span></label>
+                <input type="number" id="rentSaved" value="0" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>💼 每月副业额外收入 <span class="note">(利用碎片时间多搞到的钱)</span></label>
+                <input type="number" id="sideHustle" value="0" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>🚇 每日通勤与餐饮溢价花费 <span class="note">(元，不去公司单日省下的钱)</span></label>
+                <input type="number" id="dailyCommuteFood" value="0" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>💄 每月职场门面税 <span class="note">(省下的粉底/日抛/干洗费等)</span></label>
+                <input type="number" id="appearanceSaved" value="100" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>⏳ 每日夺回的自由总时间 <span class="note">(小时，含往返通勤 + 提前完工免于“坐班装忙”的时间)</span></label>
+                <input type="number" id="hoursSaved" value="2" step="0.5" oninput="calculate()">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>✨ 软价值状态转化</h2>
+            <div class="input-group">
+                <label>🥗 饮食与肠胃负担 (生命体征折现)</label>
+                <select id="dietTier" onchange="calculate()">
+                    <option value="1">【优质】自己做饭吃得干净，拒绝科技与狠活 (+5分)</option>
+                    <option value="2" selected>【及格】跟在公司吃得差不多，偶尔点外卖 (+0分)</option>
+                    <option value="3">【劣质】狂点外卖预制菜，奶茶零食不断 (-5分)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>🛌 睡眠与体能状态 (医疗折旧防线)</label>
+                <select id="physicalTier" onchange="calculate()">
+                    <option value="1">【优质】规律运动，且每天能睡到自然醒 (+5分)</option>
+                    <option value="2" selected>【及格】没运动，但至少省下通勤多睡了会儿 (+0分)</option>
+                    <option value="3">【劣质】报复性熬夜，久坐不动，肩颈痛加剧 (-5分)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>🧠 自我增值与业余时间 (认知资产杠杆)</label>
+                <select id="growthTier" onchange="calculate()">
+                    <option value="1">【优质】资产复利：抽空学习考证或深度思考 (+10分)</option>
+                    <option value="2" selected>【及格】情绪平稳：顺手做家务/陪家人/刷剧 (+0分)</option>
+                    <option value="3">【劣质】认知降级：严重拖延，无意识刷手机 (-10分)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>🎭 情绪与社交内耗 (精神损失费)</label>
+                <select id="emotionTier" onchange="calculate()">
+                    <option value="1">【优质】社交减负：卸下职场面具，完美隔绝政治 (+10分)</option>
+                    <option value="2" selected>【及格】按部就班：只是把老板和打卡搬回了家 (+0分)</option>
+                    <option value="3">【劣质】全天坐牢：随时被Call，比在公司更焦虑 (-10分)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result-box">
+            <div class="score-display">
+                <div class="score-num" id="scoreDisplay">--</div>
+                <div class="score-badge" id="scoreLabel">综合质量评估中...</div>
+                <div class="score-desc" id="scoreDesc"></div>
+            </div>
+            
+            <div class="result-row">
+                <div class="item-info">
+                    <span>💸 物理金钱省赚 (月)</span>
+                    <span class="item-sub">真金白银：省下的房租/车马费 + 赚到的副业钱</span>
+                </div>
+                <span class="val" id="hardMoneyDisplay">¥ 0</span>
+            </div>
+            <div class="result-row">
+                <div class="item-info">
+                    <span>⏳ 坐班/通勤肉身买断费 (月)</span>
+                    <span class="item-sub">精神赔偿：公司强行让你挤地铁/坐牢装忙必须付的钱</span>
+                </div>
+                <span class="val" id="timeValueDisplay">¥ 0</span>
+            </div>
+            <div class="result-row">
+                <div class="item-info">
+                    <span>✨ 软价值增减 (月)</span>
+                    <span class="item-sub">状态估值：身心健康与情绪内耗的经济折算</span>
+                </div>
+                <span class="val" id="softValueDisplay">¥ 0</span>
+            </div>
+            
+            <div class="result-row" style="border-bottom:none; padding-top: 18px; margin-top: 5px; border-top: 1px dashed var(--border-color); align-items: center;">
+                <span style="font-weight: 800; color: var(--text-main); font-size: 16px;">💎 每月总隐形收益</span>
+                <span class="val" id="totalMonthlyDisplay" style="color: #FA7334; font-size: 22px;">¥ 0</span>
+            </div>
+
+            <div class="conclusion-panel">
+                <div style="text-align: left; font-size: 15px; color: var(--text-main); font-weight: 800; margin-bottom: 18px; display: flex; align-items: center;">
+                    <span style="font-size: 20px; margin-right: 6px;">💡</span> 测算结论与行动指南
+                </div>
+                
+                <div class="conclusion-item">
+                    <div style="display: block;">
+                        <span class="title">📉 隐形生活血亏幅度</span>
+                        <span class="percent" id="raisePercentDisplay" style="color: #F04155;">0%</span>
+                    </div>
+                    <div class="desc">若失去居家资格，你的真实损失比例（包含被掐断的副业、流失的睡眠及巨大的精神折损）。</div>
+                </div>
+
+                <div class="conclusion-item" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+                    <div style="display: block;">
+                        <span class="title">🗣️ 纯硬性谈判底线</span>
+                        <span class="percent" id="negotiationPercentDisplay" style="color: #FA7334;">0%</span>
+                    </div>
+                    <div class="desc">回公司的纯刚需现金开销（房租差价 + 通勤餐饮）。这部分HR绝对无法反驳。</div>
+                </div>
+
+                <div class="soul-sentence-box" id="soulSentenceBox">
+                    <div class="soul-sentence-text" id="finalSoulSentence">
+                        --
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <div style="height: 20px;"></div>
+    </div>
+
+</div>
+
+<script>
+    function startCalculator() {
+        const landing = document.getElementById('landingPage');
+        const calc = document.getElementById('calculatorPage');
+        
+        landing.style.opacity = '0';
+        landing.style.transform = 'translateY(-10px)';
+        
+        setTimeout(() => {
+            landing.classList.remove('active');
+            calc.classList.add('active');
+            window.scrollTo(0, 0); 
+            calculate(); 
+        }, 300);
+    }
+
+    function goHome() {
+        const landing = document.getElementById('landingPage');
+        const calc = document.getElementById('calculatorPage');
+        
+        calc.style.opacity = '0';
+        calc.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+            calc.classList.remove('active');
+            landing.classList.add('active');
+            landing.style.opacity = '1';
+            landing.style.transform = 'translateY(0)';
+            window.scrollTo(0, 0);
+        }, 300);
+    }
+
+    function calculate() {
+        const wfhDaysPerWeek = parseFloat(document.getElementById('wfhDays').value) || 5;
+        const monthlySalary = parseFloat(document.getElementById('monthlySalary').value) || 0;
+        const dailyHours = parseFloat(document.getElementById('dailyHours').value) || 8; 
+        
+        const rentSaved = parseFloat(document.getElementById('rentSaved').value) || 0;
+        const sideHustle = parseFloat(document.getElementById('sideHustle').value) || 0;
+        const appearanceSaved = parseFloat(document.getElementById('appearanceSaved').value) || 0;
+        
+        const wfhDaysPerMonth = wfhDaysPerWeek * 4.2;
+        const wfhRatio = wfhDaysPerWeek / 5; 
+
+        const dailyCommuteFood = parseFloat(document.getElementById('dailyCommuteFood').value) || 0;
+        const commuteFoodSavedMonthly = dailyCommuteFood * wfhDaysPerMonth;
+        const hoursSavedDaily = parseFloat(document.getElementById('hoursSaved').value) || 0;
+        
+        const dietTier = parseInt(document.getElementById('dietTier').value);
+        const physicalTier = parseInt(document.getElementById('physicalTier').value);
+        const growthTier = parseInt(document.getElementById('growthTier').value);
+        const emotionTier = parseInt(document.getElementById('emotionTier').value);
+
+        const hourlyRate = monthlySalary / (21 * dailyHours); 
+        const hardMoneyMonthly = rentSaved + sideHustle + commuteFoodSavedMonthly + appearanceSaved;
+        const baseTimeValueMonthly = hoursSavedDaily * wfhDaysPerMonth * hourlyRate;
+        const engineOneTotalGain = hardMoneyMonthly + baseTimeValueMonthly;
+
+        // 3. 计分系统 (50基础 + 20搞钱 + 30软价值)
+        let financialBonusScore = 0;
+        if (monthlySalary > 0) {
+            const gainRatio = engineOneTotalGain / monthlySalary; 
+            financialBonusScore = Math.min(20, Math.round(gainRatio * 40)); 
+        }
+
+        let score = 50 + financialBonusScore; 
+        let softValueMonthly = 0;
+
+        // 【新增细分】1. 饮食软价值 (Max +400, Min -300)
+        if (dietTier === 1) { softValueMonthly += 400 * wfhRatio; score += 5; } 
+        else if (dietTier === 2) { softValueMonthly += 0; score += 0; } 
+        else if (dietTier === 3) { softValueMonthly -= 300 * wfhRatio; score -= 5; } 
+
+        // 【新增细分】2. 体能与睡眠软价值 (Max +400, Min -300)
+        if (physicalTier === 1) { softValueMonthly += 400 * wfhRatio; score += 5; } 
+        else if (physicalTier === 2) { softValueMonthly += 150 * wfhRatio; score += 0; } // 没运动但多睡了，给150元基础精神恢复补偿
+        else if (physicalTier === 3) { softValueMonthly -= 300 * wfhRatio; score -= 5; } 
+
+        // 3. 增值软价值 (时间价值杠杆)
+        let extraGrowthValue = 0;
+        if (growthTier === 1) { extraGrowthValue = baseTimeValueMonthly * 0.5; score += 10; } 
+        else if (growthTier === 2) { extraGrowthValue = 0; score += 0; }
+        else if (growthTier === 3) { extraGrowthValue = -baseTimeValueMonthly; score -= 10; } 
+
+        // 4. 情绪软价值 (工资占比)
+        if (emotionTier === 1) { softValueMonthly += (monthlySalary * 0.05) * wfhRatio; score += 10; } 
+        else if (emotionTier === 2) { softValueMonthly += 0; score += 0; }
+        else if (emotionTier === 3) { softValueMonthly -= (monthlySalary * 0.05) * wfhRatio; score -= 10; }
+
+        softValueMonthly += extraGrowthValue;
+        score = Math.max(0, Math.min(100, Math.round(score)));
+
+        const totalMonthlyValue = hardMoneyMonthly + baseTimeValueMonthly + softValueMonthly;
+        const hardCostMonthly = rentSaved + commuteFoodSavedMonthly; 
+        
+        let raisePercent = 0;
+        let negotiationPercent = 0;
+
+        if (monthlySalary > 0) {
+            raisePercent = (totalMonthlyValue / monthlySalary) * 100;
+            negotiationPercent = (hardCostMonthly / monthlySalary) * 100;
+        }
+
+        document.getElementById('scoreDisplay').innerText = score;
+        
+        let label = "";
+        let badgeBg = "";
+        let descText = "";
+        
+        if (score >= 90) { 
+            label = "🦄 顶级数字游民"; 
+            badgeBg = "var(--tier-unicorn)"; 
+            descText = "实现了时间与财富的双重自由。不仅狂赚隐形红利，身心状态也达到巅峰。";
+        }
+        else if (score >= 70) { 
+            label = "☕ 清醒搞钱人"; 
+            badgeBg = "var(--tier-coffee)"; 
+            descText = "完美拿捏居家杠杆。不仅省下了真金白银，更彻底隔绝了职场精神内耗。";
+        }
+        else if (score >= 50) { 
+            label = "😐 赛博老黄牛"; 
+            badgeBg = "var(--tier-neutral)"; 
+            descText = "只是把工位搬进了卧室。省了点通勤费，却彻底赔上了工作与生活的边界感。";
+        }
+        else { 
+            label = "💀 负资产打工"; 
+            badgeBg = "var(--tier-skull)"; 
+            descText = "作息崩盘、外卖续命、随时待命。隐形损耗巨大，还不如回公司蹭免费空调。";
+        }
+        
+        const scoreLabelEl = document.getElementById('scoreLabel');
+        scoreLabelEl.innerText = label;
+        scoreLabelEl.style.background = badgeBg;
+        
+        document.getElementById('scoreDesc').innerText = descText;
+
+        document.getElementById('hardMoneyDisplay').innerText = "¥ " + Math.round(hardMoneyMonthly).toLocaleString();
+        document.getElementById('timeValueDisplay').innerText = "¥ " + Math.round(baseTimeValueMonthly).toLocaleString();
+        
+        const softDisplay = document.getElementById('softValueDisplay');
+        if (softValueMonthly >= 0) {
+            softDisplay.innerText = "+ ¥ " + Math.round(softValueMonthly).toLocaleString();
+            softDisplay.style.color = "#FA7334";
+        } else {
+            softDisplay.innerText = "- ¥ " + Math.abs(Math.round(softValueMonthly)).toLocaleString();
+            softDisplay.style.color = "#F04155";
+        }
+
+        document.getElementById('totalMonthlyDisplay').innerText = "¥ " + Math.round(totalMonthlyValue).toLocaleString();
+
+        document.getElementById('raisePercentDisplay').innerText = Math.round(raisePercent) + "%";
+        document.getElementById('negotiationPercentDisplay').innerText = Math.round(negotiationPercent) + "%";
+
+        const soulSentenceBox = document.getElementById('soulSentenceBox');
+        const soulSentenceText = document.getElementById('finalSoulSentence');
+        
+        if (raisePercent <= 0) {
+            soulSentenceText.innerText = "讲真，居家反而让你疯狂内耗、身心俱疲。别测了，主动回公司蹭免费空调吧！";
+            soulSentenceText.style.color = "var(--text-sub)";
+            soulSentenceBox.style.background = "var(--bg-body)";
+            soulSentenceBox.style.borderColor = "var(--border-color)";
+        } else if (negotiationPercent > 0) {
+            soulSentenceText.innerHTML = `💬 如果公司强行要求RTO，除非给你加薪<span style="font-size:18px;">${Math.round(negotiationPercent)}% </span>兜底，否则绝不妥协！`;
+            soulSentenceText.style.color = "#F04155";
+            soulSentenceBox.style.background = "rgba(240, 65, 85, 0.05)";
+            soulSentenceBox.style.borderColor = "rgba(240, 65, 85, 0.2)";
+        } else {
+            soulSentenceText.innerText = `💬 结论：虽然没产生额外的通勤房租费，但取消 WFH 仍会让你损失 ${Math.round(raisePercent)}% 的生活质量，请谨慎权衡！`;
+            soulSentenceText.style.color = "#FA7334";
+            soulSentenceBox.style.background = "rgba(250, 115, 52, 0.05)";
+            soulSentenceBox.style.borderColor = "rgba(250, 115, 52, 0.2)";
+        }
+    }
+</script>
+
+</body>
+</html>
